@@ -15,7 +15,7 @@ REM Build using JOM
 REM Deploy (Copy from the new 'Build' folder)
 rd /s /q "Build\tmp"
 
-rem copy Build\RingQML.dll ..\lib
+copy Build\RingQML.dll ..\libraries\RingQML
 copy Build\RingQML.dll c:\ring\bin
 
 REM Cleanup
