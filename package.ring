@@ -30,7 +30,9 @@ aPackageInfo = [
 		"libraries/RingQML/corefunctions.ring",
 		"libraries/RingQML/globals.ring",
 		"libraries/RingQML/ringQML.ring",
-		"libraries/RingQML/ringQmlRoot.ring"
+		"libraries/RingQML/ringQmlRoot.ring",
+		// Samples
+		"samples/UsingRingQML/Hello_world.ring"
 	],
 	:windowsfiles = 	[
 
