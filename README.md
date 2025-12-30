@@ -87,6 +87,7 @@ Here is a simple example showing how to load the library, create a Qt Applicatio
 * **libraries/RingQML**: Contains `*.ring` files (Ring library).
 * **src**: Contains C/C++ and Qt project files for the extension.
 * **bin**: Contains `RingQML.dll` file.
+* **samples**: Contains usage samples files.
 * **tests**: Contains simple `*.ring` files for testing.
 * **projects**: Contains applications developed using the RingQML extension.
 * **QMLClasses**: Contains `*.cf` files for the Ring code generator that generates code independent of the `guilib.ring` library.
