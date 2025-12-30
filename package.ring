@@ -25,7 +25,7 @@ aPackageInfo = [
 		"main.ring"
 	],
 	:ringfolderfiles = 	[
-		"bin/load/ringQML.ring"
+		"bin/load/ringQML.ring",
 		"libraries/RingQML/callringfuncfromqml.ring",
 		"libraries/RingQML/corefunctions.ring",
 		"libraries/RingQML/globals.ring",
