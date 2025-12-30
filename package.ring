@@ -21,7 +21,7 @@ aPackageInfo = [
 		]
 	],
 	:files = 	[
-		"README.md"
+		"README.md",
 		"main.ring"
 	],
 	:ringfolderfiles = 	[
