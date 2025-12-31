@@ -73,7 +73,7 @@ func RingQml_Functions_getQMLCodeForEval cListName,nIndex, alist
 			if ispointer(alist[nPara])//
 				//cCode += 'p'+nPara+' = new qObject(){ pObject='+cListName+'['+nPara+'] }'+nl
 				if alist[nPara][2]= 'QObject'
-					cCode += 'p'+nPara+' = new qObject('+cListName+'['+nPara+'] )'+nl
+					cCode += 'p'+nPara+' = new ringQMLObject('+cListName+'['+nPara+'] )'+nl
 				but alist[nPara][2] != 'QObject' and isclass(alist[nPara][2])
 					cCode += 'p'+nPara+' = new '+alist[nPara][2]+'{ pObject='+cListName+'['+nPara+'] }'+nl
 				else
@@ -99,8 +99,8 @@ func RingQml_Functions_getQMLCodeForEval cListName,nIndex, alist
 				RingQML_Variables_aIndexs + nPara
 
 			//	cCode += ' new qObject(){ pObject='+cListName+getIndexsBraces()+' }'
-			//	cCode += ' new ringQMLObject('+cListName+getIndexsBraces()+')'
-				cCode += ' new qObject('+cListName+getIndexsBraces()+')'
+				cCode += ' new ringQMLObject('+cListName+RingQml_Functions_getIndexsBraces()+')'
+			//	cCode += ' new qObject('+cListName+getIndexsBraces()+')'
 				del(RingQML_Variables_aIndexs,len(RingQML_Variables_aIndexs))
 
 			but islist(alist[nPara]) 
@@ -115,7 +115,7 @@ func RingQml_Functions_getQMLCodeForEval cListName,nIndex, alist
 			else
 				RingQML_Variables_aIndexs + nPara
 
-				cCode +=' '+cListName+getIndexsBraces()
+				cCode +=' '+cListName+RingQml_Functions_getIndexsBraces()
 				del(RingQML_Variables_aIndexs,len(RingQML_Variables_aIndexs))
 
 			ok
@@ -127,7 +127,14 @@ func RingQml_Functions_getQMLCodeForEval cListName,nIndex, alist
 		cCode+=nl+RingQml_Functions_gettabsMone()+' ]'
 	ok
 	return cCode
-	func RingQml_Functions_gettabs
-		return copy(tab,RingQML_Variables_nTabs)
-	func RingQml_Functions_gettabsMone() //Tabs - 1
-		return copy(tab,RingQML_Variables_nTabs-1)
+func RingQml_Functions_gettabs
+	return copy(tab,RingQML_Variables_nTabs)
+func RingQml_Functions_gettabsMone() //Tabs - 1
+	return copy(tab,RingQML_Variables_nTabs-1)
+func RingQml_Functions_getIndexsBraces
+	cCode = ''
+	for x=1 to len(RingQML_Variables_aIndexs)
+		cCode +='['+RingQML_Variables_aIndexs[x]+']'
+	next
+	return cCode
+	
