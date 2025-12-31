@@ -4,6 +4,8 @@ load 'globals.ring'
 load 'corefunctions.ring'
 load 'ringQmlRoot.ring'
 load 'callringfuncfromqml.ring'
+load 'ringQMLObject.ring'
+
 if iswindows() 
 	$GcLibExtensionFilePath =''
 	if fexists('RingQML.dll')
