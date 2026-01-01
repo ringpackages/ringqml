@@ -40,7 +40,8 @@ aPackageInfo = [
 		"applications/RingQML/pray_time/getTimesFromTables.ring",
 		"applications/RingQML/pray_time/tables/table.ring",
 		"applications/RingQML/pray_time/qml/IconShape.ring",
-		"applications/RingQML/pray_time/qml/main.ring"
+		"applications/RingQML/pray_time/qml/main.ring",
+		"applications/RingQML/pray_time/qml/MinuteCircle.ring"
 	],
 	:windowsfiles = 	[
 
