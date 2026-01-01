@@ -36,7 +36,8 @@ aPackageInfo = [
 		"samples/UsingRingQML/Hello_world.ring",
 		// Applications
 		"applications/RingQML/pray_time/README.md",
-		"applications/RingQML/pray_time/pray_times.ring"
+		"applications/RingQML/pray_time/pray_times.ring",
+		"applications/RingQML/pray_time/getTimesFromTables.ring"
 	],
 	:windowsfiles = 	[
 
