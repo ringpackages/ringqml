@@ -50,7 +50,7 @@ ringpm install praytimes from mohannad-aldulaimi
 ```
 
 ## run :
-3. Run the application using the following command:
+Run the application using the following command:
 ```bash
 ringpm run praytimes
 ```
