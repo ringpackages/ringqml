@@ -44,7 +44,7 @@ A comprehensive, cross-platform prayer times application built using the **Ring*
 
 * **Canvas API:** Used for drawing custom shapes like the Minute Circle.
 
-## insitall :
+## install :
 ```bash
 ringpm install praytimes from mohannad-aldulaimi
 ```
