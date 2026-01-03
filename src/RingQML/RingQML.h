@@ -22,6 +22,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QSet>
+#include <QImage>
 #include <QDebug>
 #include <QJSValue>
 #include <QQmlContext>
@@ -33,6 +34,8 @@
 #include <QLibraryInfo>
 #include <QEventLoop>
 #include <QMetaProperty>
+#include <QQuickItemGrabResult>
+#include <QSharedPointer>
 
 extern "C" { 
 	#include "ring.h"
@@ -113,6 +116,10 @@ extern "C" {
 	#ifndef RING_QML_UTILS_H
 	#define RING_QML_UTILS_H
 	
+	/**
+	 * Take a SnapShot for QML Item using its objecName.
+	 */
+	QImage* grabItemSnapshot(QQuickItem* rootItem, const char* objectName);
 	/**
 	 * Converts a Ring List (and nested lists) into a QVariant.
 	 * Handles Maps (Key-Value pairs), Lists, and QObject pointers.
