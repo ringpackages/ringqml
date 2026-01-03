@@ -33,6 +33,7 @@ aPackageInfo = [
 		"libraries/RingQML/ringQmlRoot.ring",
 		"libraries/RingQML/ringQMLObject.ring",
 		// Samples
+		"samples/UsingRingQML/runSamples.ring",
 		"samples/UsingRingQML/Hello_world.ring",
 		"samples/UsingRingQML/take_snapShot_For_Item.ring",
 		"samples/UsingRingQML/take_snapShot_For_Item_From_Component.ring",
