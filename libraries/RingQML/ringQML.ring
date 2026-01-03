@@ -111,6 +111,14 @@ class ringQML
 	func getimage nId
 		return "image://RingProvider/"+nId
 	/*
+		Name : grabItemsnapshot
+		Usage : grabItemsnapshot(cObjectName)
+		Params : cObjectName (String)
+		return : QImage (Object)
+	*/
+	func grabItemsnapshot cObjectName
+		return new QImage { pObject=ringqml_grabitemsnapshot(this.pQQuickItem,cObjectName) }
+	/*
 		Name : loadContent
 		Usage : loadContent(cQmlCode)
 		Params : cQmlCode (String)
