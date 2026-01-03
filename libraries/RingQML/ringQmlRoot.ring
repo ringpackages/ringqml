@@ -39,15 +39,9 @@ class ringQmlRoot
 				next
 			ok
 			cMethod+=cPara+'{'+nl+' return callQMLFunc('+char(34)+aFunctionsList[x][1]+char(34)+',['+cPara+'])'+nl+'  }'
-			//? 'cNewMethodName = '+cMethod
-			//cNewMethodName = eval('return '+cMethod)
-
-			//eval('cNewMethodName = '+cMethod)
-			//if ! ismethod(self, lower(aFunctionsList[x][1]) )
-				//addmethod(this,aFunctionsList[x][1],cNewMethodName)
-			addmethod(this,aFunctionsList[x][1],eval('return '+cMethod))
-			//ok
-		next 
+			// Adding the Method to root attribute
+				addmethod(this,aFunctionsList[x][1],eval('return '+cMethod))
+		next
 	func callQMLFunc cFuncName,aPara 
 		if isnull(cFuncName) return 0 ok
 		return ringqmlcallqmlfunc(oQQuickItem,cFuncName,aPara)
