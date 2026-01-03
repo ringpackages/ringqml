@@ -9,7 +9,7 @@ aPackageInfo = [
 	:ringversion = "1.24",
 	:versions = 	[
 		[
-			:version = "1.1.1",
+			:version = "1.1.2",
 			:branch = "main"
 		]
 	],
@@ -34,7 +34,8 @@ aPackageInfo = [
 		"libraries/RingQML/ringQMLObject.ring",
 		// Samples
 		"samples/UsingRingQML/Hello_world.ring",
-		"samples/UsingRingQML/take_snapShot_For_Item.ring"
+		"samples/UsingRingQML/take_snapShot_For_Item.ring",
+		"samples/UsingRingQML/take_snapShot_For_Item_From_Component.ring",
 	],
 	:windowsfiles = 	[
 
