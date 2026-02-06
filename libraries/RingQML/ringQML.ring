@@ -53,6 +53,22 @@ class ringQML
 		initqmlclass(pEngine)
 		return self 
 	/*
+		Name : setWinIcon
+		Usage : setWinIcon(cIcon)
+		Params : cIcon (String)
+		return : null
+	*/
+	func setWinIcon cIcon
+		switch nQMLLoadingType
+			on G_RINGQML_LOAD_TYPE_ENGINE
+				setqmlappiconforqappinstance(cIcon)
+			on G_RINGQML_LOAD_TYPE_VIEW
+				qwindow_seticon( getobjectpointerfromringobject(pParent), qicon_new(qpixmap_new(cIcon)) )
+			on G_RINGQML_LOAD_TYPE_WIDGET
+				qwidget_setWindowIcon( qicon_new(qpixmap_new(cIcon)) )
+		off
+	
+	/*
 		Name : ShareWidget
 		Usage : ShareWidget(pWidget,cName)
 		Params : pWidget (Object|Pointer),cName (String)
