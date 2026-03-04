@@ -16,6 +16,7 @@
 */
 //<FileStart>
 #include "ring_qml_utils.h"
+#include "ring_qml_core.h"
 //<IncludeStart>
 #include <QDebug>
 #include <QMetaProperty>
@@ -346,32 +347,32 @@ QVariantList getQmlDefinedFunctions(QObject* object) {
 }
 void qVariantToRingList(VM* pVM, List* pParentList, const QVariant& value) {
     // 1. Collections (Maps/Lists)
-    if (value.type() == QVariant::Map) {
+    if (ringqml_get_qvariant_type(value) == QMetaType::QVariantMap) {
         qVariantMapToRingList(pVM, pParentList, value.toMap());
         return;
     } 
-    if (value.type() == QVariant::List) {
+    if (ringqml_get_qvariant_type(value) == QMetaType::QVariantList) {
         qVariantListToRingList(pVM, pParentList, value.toList());
         return;
     }
 
     // 2. Specific Primitives
     // We check types explicitly first to avoid accidental string conversions for Ints/Bools
-    if (value.type() == QVariant::Bool) {
+    if (ringqml_get_qvariant_type(value) == QMetaType::Bool) {
          ring_list_adddouble_gc(pVM->pRingState, pParentList, value.toBool() ? 1.0 : 0.0);
          return;
     }
-    if (value.type() == QVariant::Int || value.type() == QVariant::LongLong || value.type() == QVariant::UInt) {
+    if (ringqml_get_qvariant_type(value) == QMetaType::Int || ringqml_get_qvariant_type(value) == QMetaType::LongLong || ringqml_get_qvariant_type(value) == QMetaType::UInt) {
          ring_list_adddouble_gc(pVM->pRingState, pParentList, (double)value.toLongLong());
          return;
     }
-    if (value.type() == QVariant::Double) {
+    if (ringqml_get_qvariant_type(value) == QMetaType::Double) {
          ring_list_adddouble_gc(pVM->pRingState, pParentList, value.toDouble());
          return;
     }
     
     // 3. Strings (and anything that naturally acts as one)
-    if (value.canConvert<QString>() && value.type() != QVariant::UserType) {
+    if (value.canConvert<QString>() && ringqml_get_qvariant_type(value) < QMetaType::User) {
         ring_list_addstring_gc(pVM->pRingState, pParentList, value.toString().toUtf8().constData());
         return;
     }
@@ -392,7 +393,7 @@ void qVariantToRingList(VM* pVM, List* pParentList, const QVariant& value) {
         void* obj = nullptr;
         
         // Check if it is strictly a void* type
-        if (value.userType() == QMetaType::VoidStar) {
+        if (ringqml_get_qvariant_type(value) == QMetaType::VoidStar) {
              obj = value.value<void*>();
         } else {
              // For registered custom pointer types, the QVariant data holds the pointer itself. 

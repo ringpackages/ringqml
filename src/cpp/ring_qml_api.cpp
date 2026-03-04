@@ -165,7 +165,7 @@ RING_FUNC(ring_callQMLFunc) {
     funcName = RING_API_GETSTRING(2);
     params = ringListToQVariant(RING_API_GETLIST(3));
     
-    listArgs = (params.type() == QVariant::List) ? params.toList() : params.toMap().values();
+    listArgs = (ringqml_get_qvariant_type(params) == QMetaType::QVariantList) ? params.toList() : params.toMap().values();
     ret = callQmlFunction(target, funcName, listArgs);
     
     RING_API_RETNUMBER((int)ret);

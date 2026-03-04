@@ -12,10 +12,17 @@
 #include <QObject>
 #include <QVariant>
 #include <QQmlEngine>
+#include <QMetaType>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    #define RING_QML_QT6
+#endif
 //<IncludeEnd>
 extern "C" {
     #include "ring.h"
 }
+
+int ringqml_get_qvariant_type(const QVariant& value);
 
 class RingQML : public QObject
 {

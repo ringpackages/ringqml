@@ -14,6 +14,14 @@
 //<IncludeEnd>
 RingQML *Ringbridge = nullptr;
 
+int ringqml_get_qvariant_type(const QVariant& value) {
+#ifdef RING_QML_QT6
+    return value.typeId();
+#else
+    return value.userType();
+#endif
+}
+
 RingQML::RingQML(VM* vm, QObject* parent) 
     : QObject(parent), m_vm(vm) 
 {
@@ -40,14 +48,12 @@ QVariant RingQML::setVar(const QString& varName, const QVariant& valueIn) {
     // This solves the "const QVariant" assignment error because we are modifying our local copy, not the input ref.
     QVariant value = valueIn;
 
-    // --- FIX START ---
     // Check if the variant contains a QJSValue (common when coming from QML)
-    if (value.userType() == qMetaTypeId<QJSValue>()) {
+    if (ringqml_get_qvariant_type(value) == qMetaTypeId<QJSValue>()) {
         QJSValue jsVal = value.value<QJSValue>();
         // toVariant() converts JS Arrays to QVariantList and JS Objects to QVariantMap
         value = jsVal.toVariant(); 
     }
-    // --- FIX END ---
 
     if (!m_vm) return QVariant(false);
     QByteArray nameUtf8 = varName.toUtf8().toLower();
@@ -59,7 +65,7 @@ QVariant RingQML::setVar(const QString& varName, const QVariant& valueIn) {
     }
 
     // 1. Collections (Maps/Lists)
-    if (value.type() == QVariant::Map) {
+    if (ringqml_get_qvariant_type(value) == QMetaType::QVariantMap) {
         ring_list_setlist_gc(m_vm->pRingState,pList,RING_VAR_VALUE);
         List* pVarList = ring_list_getlist(pList,RING_VAR_VALUE);
         ring_list_deleteallitems_gc(m_vm->pRingState, pVarList);
@@ -77,7 +83,7 @@ QVariant RingQML::setVar(const QString& varName, const QVariant& valueIn) {
 
         return QVariant(true);
     } 
-    if (value.type() == QVariant::List) {
+    if (ringqml_get_qvariant_type(value) == QMetaType::QVariantList) {
         ring_list_setlist_gc(m_vm->pRingState,pList,RING_VAR_VALUE);
         List* pVarList = ring_list_getlist(pList,RING_VAR_VALUE);
         ring_list_deleteallitems_gc(m_vm->pRingState, pVarList);
@@ -97,24 +103,24 @@ QVariant RingQML::setVar(const QString& varName, const QVariant& valueIn) {
         return QVariant(true);
     }
 
-    if (value.type() == QVariant::Bool) {
+    if (ringqml_get_qvariant_type(value) == QMetaType::Bool) {
         ring_list_setdouble_gc(m_vm->pRingState, pList,RING_VAR_VALUE, value.toBool() ? 1.0 : 0.0);
         return QVariant(true);
 
     }
-    if (value.type() == QVariant::Int || value.type() == QVariant::LongLong || value.type() == QVariant::UInt) {
+    if (ringqml_get_qvariant_type(value) == QMetaType::Int || ringqml_get_qvariant_type(value) == QMetaType::LongLong || ringqml_get_qvariant_type(value) == QMetaType::UInt) {
         ring_list_setdouble_gc(m_vm->pRingState, pList,RING_VAR_VALUE, (double)value.toLongLong());
         return QVariant(true);
 
     }
-    if (value.type() == QVariant::Double) {
+    if (ringqml_get_qvariant_type(value) == QMetaType::Double) {
         ring_list_setdouble_gc(m_vm->pRingState, pList,RING_VAR_VALUE, value.toDouble());
         return QVariant(true);
 
     }
     
     // 3. Strings (and anything that naturally acts as one)
-    if (value.canConvert<QString>() && value.type() != QVariant::UserType) {
+    if (value.canConvert<QString>() && ringqml_get_qvariant_type(value) < QMetaType::User) {
         ring_list_setstring_gc(m_vm->pRingState, pList,RING_VAR_VALUE, value.toString().toUtf8().constData());
         return QVariant(true);
     }
@@ -138,7 +144,7 @@ QVariant RingQML::setVar(const QString& varName, const QVariant& valueIn) {
         void* obj = nullptr;
         
         // Check if it is strictly a void* type
-        if (value.userType() == QMetaType::VoidStar) {
+        if (ringqml_get_qvariant_type(value) == QMetaType::VoidStar) {
              obj = value.value<void*>();
         } else {
              // For registered custom pointer types, the QVariant data holds the pointer itself. 
