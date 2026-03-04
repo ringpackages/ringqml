@@ -8,6 +8,10 @@
 #include <QObject>
 #include <QVariant>
 #include <QQmlEngine>
+#include <QMetaType>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    #define RING_QML_QT6
+#endif
 #include <QQuickImageProvider>
 #include <QPixmap>
 #include <QMap>
@@ -44,6 +48,13 @@
 
 // File : ring_qml_core.cpp
 	RingQML *Ringbridge = nullptr;
+	int ringqml_get_qvariant_type(const QVariant& value) {
+	#ifdef RING_QML_QT6
+	    return value.typeId();
+	#else
+	    return value.userType();
+	#endif
+	}
 	RingQML::RingQML(VM* vm, QObject* parent) 
 	    : QObject(parent), m_vm(vm) 
 	{
@@ -63,14 +74,12 @@
 	    // Create a mutable copy of the value.
 	    // This solves the "const QVariant" assignment error because we are modifying our local copy, not the input ref.
 	    QVariant value = valueIn;
-	    // --- FIX START ---
 	    // Check if the variant contains a QJSValue (common when coming from QML)
-	    if (value.userType() == qMetaTypeId<QJSValue>()) {
+	    if (ringqml_get_qvariant_type(value) == qMetaTypeId<QJSValue>()) {
 	        QJSValue jsVal = value.value<QJSValue>();
 	        // toVariant() converts JS Arrays to QVariantList and JS Objects to QVariantMap
 	        value = jsVal.toVariant(); 
 	    }
-	    // --- FIX END ---
 	    if (!m_vm) return QVariant(false);
 	    QByteArray nameUtf8 = varName.toUtf8().toLower();
 	    List* pList = ring_state_findvar(m_vm->pRingState, nameUtf8.data());
@@ -79,7 +88,7 @@
 	        return QVariant(false);
 	    }
 	    // 1. Collections (Maps/Lists)
-	    if (value.type() == QVariant::Map) {
+	    if (ringqml_get_qvariant_type(value) == QMetaType::QVariantMap) {
 	        ring_list_setlist_gc(m_vm->pRingState,pList,RING_VAR_VALUE);
 	        List* pVarList = ring_list_getlist(pList,RING_VAR_VALUE);
 	        ring_list_deleteallitems_gc(m_vm->pRingState, pVarList);
@@ -94,7 +103,7 @@
 	        ring_list_delete_gc(m_vm->pRingState, pTemp);
 	        return QVariant(true);
 	    } 
-	    if (value.type() == QVariant::List) {
+	    if (ringqml_get_qvariant_type(value) == QMetaType::QVariantList) {
 	        ring_list_setlist_gc(m_vm->pRingState,pList,RING_VAR_VALUE);
 	        List* pVarList = ring_list_getlist(pList,RING_VAR_VALUE);
 	        ring_list_deleteallitems_gc(m_vm->pRingState, pVarList);
@@ -110,20 +119,20 @@
 	        ring_list_delete_gc(m_vm->pRingState, pTemp);
 	        return QVariant(true);
 	    }
-	    if (value.type() == QVariant::Bool) {
+	    if (ringqml_get_qvariant_type(value) == QMetaType::Bool) {
 	        ring_list_setdouble_gc(m_vm->pRingState, pList,RING_VAR_VALUE, value.toBool() ? 1.0 : 0.0);
 	        return QVariant(true);
 	    }
-	    if (value.type() == QVariant::Int || value.type() == QVariant::LongLong || value.type() == QVariant::UInt) {
+	    if (ringqml_get_qvariant_type(value) == QMetaType::Int || ringqml_get_qvariant_type(value) == QMetaType::LongLong || ringqml_get_qvariant_type(value) == QMetaType::UInt) {
 	        ring_list_setdouble_gc(m_vm->pRingState, pList,RING_VAR_VALUE, (double)value.toLongLong());
 	        return QVariant(true);
 	    }
-	    if (value.type() == QVariant::Double) {
+	    if (ringqml_get_qvariant_type(value) == QMetaType::Double) {
 	        ring_list_setdouble_gc(m_vm->pRingState, pList,RING_VAR_VALUE, value.toDouble());
 	        return QVariant(true);
 	    }
 	    // 3. Strings (and anything that naturally acts as one)
-	    if (value.canConvert<QString>() && value.type() != QVariant::UserType) {
+	    if (value.canConvert<QString>() && ringqml_get_qvariant_type(value) < QMetaType::User) {
 	        ring_list_setstring_gc(m_vm->pRingState, pList,RING_VAR_VALUE, value.toString().toUtf8().constData());
 	        return QVariant(true);
 	    }
@@ -142,7 +151,7 @@
 	    {
 	        void* obj = nullptr;
 	        // Check if it is strictly a void* type
-	        if (value.userType() == QMetaType::VoidStar) {
+	        if (ringqml_get_qvariant_type(value) == QMetaType::VoidStar) {
 	             obj = value.value<void*>();
 	        } else {
 	             // For registered custom pointer types, the QVariant data holds the pointer itself. 
@@ -404,6 +413,25 @@
 	    if (!rootItem) return false;
 	    QVariant result;
 	    QVariant genericParams[10]; // Max 10 args support
+	#ifdef RING_QML_QT6
+	    // Qt 6.5+ supports QMetaObject::invokeMethod directly with QVariant arguments
+	    // bypassing the need for QGenericArgument/QMetaMethodArgument conversion issues entirely.
+	    QVariant returnValue;
+	    bool success = QMetaObject::invokeMethod(rootItem, functionName, Qt::AutoConnection,
+	        Q_RETURN_ARG(QVariant, returnValue),
+	        params.size() > 0 ? params[0] : QVariant(),
+	        params.size() > 1 ? params[1] : QVariant(),
+	        params.size() > 2 ? params[2] : QVariant(),
+	        params.size() > 3 ? params[3] : QVariant(),
+	        params.size() > 4 ? params[4] : QVariant(),
+	        params.size() > 5 ? params[5] : QVariant(),
+	        params.size() > 6 ? params[6] : QVariant(),
+	        params.size() > 7 ? params[7] : QVariant(),
+	        params.size() > 8 ? params[8] : QVariant(),
+	        params.size() > 9 ? params[9] : QVariant()
+	    );
+	    return success;
+	#else
 	    for(int i=0; i<params.size() && i<10; ++i) genericParams[i] = params[i];
 	    return QMetaObject::invokeMethod(rootItem, functionName, 
 	        params.size() > 0 ? Q_ARG(QVariant, genericParams[0]) : QGenericArgument(),
@@ -417,6 +445,7 @@
 	        params.size() > 8 ? Q_ARG(QVariant, genericParams[8]) : QGenericArgument(),
 	        params.size() > 9 ? Q_ARG(QVariant, genericParams[9]) : QGenericArgument()
 	    );
+	#endif
 	}
 
 
@@ -701,30 +730,30 @@
 	}
 	void qVariantToRingList(VM* pVM, List* pParentList, const QVariant& value) {
 	    // 1. Collections (Maps/Lists)
-	    if (value.type() == QVariant::Map) {
+	    if (ringqml_get_qvariant_type(value) == QMetaType::QVariantMap) {
 	        qVariantMapToRingList(pVM, pParentList, value.toMap());
 	        return;
 	    } 
-	    if (value.type() == QVariant::List) {
+	    if (ringqml_get_qvariant_type(value) == QMetaType::QVariantList) {
 	        qVariantListToRingList(pVM, pParentList, value.toList());
 	        return;
 	    }
 	    // 2. Specific Primitives
 	    // We check types explicitly first to avoid accidental string conversions for Ints/Bools
-	    if (value.type() == QVariant::Bool) {
+	    if (ringqml_get_qvariant_type(value) == QMetaType::Bool) {
 	         ring_list_adddouble_gc(pVM->pRingState, pParentList, value.toBool() ? 1.0 : 0.0);
 	         return;
 	    }
-	    if (value.type() == QVariant::Int || value.type() == QVariant::LongLong || value.type() == QVariant::UInt) {
+	    if (ringqml_get_qvariant_type(value) == QMetaType::Int || ringqml_get_qvariant_type(value) == QMetaType::LongLong || ringqml_get_qvariant_type(value) == QMetaType::UInt) {
 	         ring_list_adddouble_gc(pVM->pRingState, pParentList, (double)value.toLongLong());
 	         return;
 	    }
-	    if (value.type() == QVariant::Double) {
+	    if (ringqml_get_qvariant_type(value) == QMetaType::Double) {
 	         ring_list_adddouble_gc(pVM->pRingState, pParentList, value.toDouble());
 	         return;
 	    }
 	    // 3. Strings (and anything that naturally acts as one)
-	    if (value.canConvert<QString>() && value.type() != QVariant::UserType) {
+	    if (value.canConvert<QString>() && ringqml_get_qvariant_type(value) < QMetaType::User) {
 	        ring_list_addstring_gc(pVM->pRingState, pParentList, value.toString().toUtf8().constData());
 	        return;
 	    }
@@ -742,7 +771,7 @@
 	    {
 	        void* obj = nullptr;
 	        // Check if it is strictly a void* type
-	        if (value.userType() == QMetaType::VoidStar) {
+	        if (ringqml_get_qvariant_type(value) == QMetaType::VoidStar) {
 	             obj = value.value<void*>();
 	        } else {
 	             // For registered custom pointer types, the QVariant data holds the pointer itself. 
@@ -952,7 +981,7 @@
 	    target = (QQuickItem*)RING_API_GETCPOINTER(1, "QQuickItem");
 	    funcName = RING_API_GETSTRING(2);
 	    params = ringListToQVariant(RING_API_GETLIST(3));
-	    listArgs = (params.type() == QVariant::List) ? params.toList() : params.toMap().values();
+	    listArgs = (ringqml_get_qvariant_type(params) == QMetaType::QVariantList) ? params.toList() : params.toMap().values();
 	    ret = callQmlFunction(target, funcName, listArgs);
 	    RING_API_RETNUMBER((int)ret);
 	}

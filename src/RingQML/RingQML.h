@@ -8,6 +8,10 @@
 #include <QObject>
 #include <QVariant>
 #include <QQmlEngine>
+#include <QMetaType>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    #define RING_QML_QT6
+#endif
 #include <QQuickImageProvider>
 #include <QPixmap>
 #include <QMap>
@@ -47,6 +51,7 @@ extern "C" {
 	#ifndef RING_QML_CORE_H
 	#define RING_QML_CORE_H
 	
+	int ringqml_get_qvariant_type(const QVariant& value);
 	class RingQML : public QObject
 	{
 	    Q_OBJECT
