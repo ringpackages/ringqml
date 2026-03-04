@@ -232,6 +232,25 @@ bool callQmlFunction(QQuickItem* rootItem, const char* functionName, const QVari
     
     QVariant result;
     QVariant genericParams[10]; // Max 10 args support
+#ifdef RING_QML_QT6
+    // Qt 6.5+ supports QMetaObject::invokeMethod directly with QVariant arguments
+    // bypassing the need for QGenericArgument/QMetaMethodArgument conversion issues entirely.
+    QVariant returnValue;
+    bool success = QMetaObject::invokeMethod(rootItem, functionName, Qt::AutoConnection,
+        Q_RETURN_ARG(QVariant, returnValue),
+        params.size() > 0 ? params[0] : QVariant(),
+        params.size() > 1 ? params[1] : QVariant(),
+        params.size() > 2 ? params[2] : QVariant(),
+        params.size() > 3 ? params[3] : QVariant(),
+        params.size() > 4 ? params[4] : QVariant(),
+        params.size() > 5 ? params[5] : QVariant(),
+        params.size() > 6 ? params[6] : QVariant(),
+        params.size() > 7 ? params[7] : QVariant(),
+        params.size() > 8 ? params[8] : QVariant(),
+        params.size() > 9 ? params[9] : QVariant()
+    );
+    return success;
+#else
     for(int i=0; i<params.size() && i<10; ++i) genericParams[i] = params[i];
     
     return QMetaObject::invokeMethod(rootItem, functionName, 
@@ -246,5 +265,6 @@ bool callQmlFunction(QQuickItem* rootItem, const char* functionName, const QVari
         params.size() > 8 ? Q_ARG(QVariant, genericParams[8]) : QGenericArgument(),
         params.size() > 9 ? Q_ARG(QVariant, genericParams[9]) : QGenericArgument()
     );
+#endif
 }
 //<FileEnd>
