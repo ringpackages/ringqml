@@ -5,11 +5,11 @@ aPackageInfo = [
 	:developer = "Ph.T, Dev. Mohannad Alayash",
 	:email = "mohannadazazalayash@gmail.com",
 	:license = "MIT License",
-	:version = "1.2.4",
-	:ringversion = "1.24",
+	:version = "1.3.0",
+	:ringversion = "1.25",
 	:versions = 	[
 		[
-			:version = "1.2.4",
+			:version = "1.3.0",
 			:branch = "main"
 		]
 	],
@@ -28,6 +28,8 @@ aPackageInfo = [
 		"bin/load/ringQML.ring",
 		"bin/load/ring_qt_qml.ring",
 		"bin/ring_qt_qml.dll",
+		"bin/RingQML.dll",
+		"bin/RingQML6.dll",
 		"libraries/RingQML/callringfuncfromqml.ring",
 		"libraries/RingQML/corefunctions.ring",
 		"libraries/RingQML/globals.ring",
