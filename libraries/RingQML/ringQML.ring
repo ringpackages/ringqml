@@ -1,7 +1,8 @@
 load 'codegenlib.ring'
-
 load 'globals.ring'
+
 load 'corefunctions.ring'
+load 'utils.ring'
 load 'ringQmlRoot.ring'
 load 'callringfuncfromqml.ring'
 load 'ringQMLObject.ring'
@@ -48,8 +49,11 @@ class ringQML
 		else 
 			pParent = getPointerOnly(oParent)
 			pEngine = getPointerOnly(oParent.engine())
-		ok
+		ok 
 		nQMLLoadingType=getQMLLoadingType(pParent[2])
+		pStringListPaths = new QStringList()
+		pStringListPaths.append("C:\Qt\6.10.2\msvc2022_64\qml")
+		qQMLEngine_setImportPathList(pEngine, pStringListPaths.pObject)
 		initqmlclass(pEngine)
 		return self 
 	/*
