@@ -51,9 +51,11 @@ class ringQML
 			pEngine = getPointerOnly(oParent.engine())
 		ok 
 		nQMLLoadingType=getQMLLoadingType(pParent[2])
-		pStringListPaths = new QStringList()
-		pStringListPaths.append(G_RINGQML_cQT6FolderPath+"\qml")
-		qQMLEngine_setImportPathList(pEngine, pStringListPaths.pObject)
+		if ! isnull(G_RINGQML_cQT6FolderPath)
+			pStringListPaths = new QStringList()
+			pStringListPaths.append(G_RINGQML_cQT6FolderPath+"\qml")
+			qQMLEngine_setImportPathList(pEngine, pStringListPaths.pObject)
+		ok
 		initqmlclass(pEngine)
 		return self 
 	/*
