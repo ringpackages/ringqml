@@ -46,8 +46,11 @@ if exist "set_qt_flags_qml.bat" (
     )
 )
 
+
 echo Calling code generator...
 "%RING_EXE%" %PAREC_RING% classes\qt.cf ring_qt_qml.cpp ring_qt_qml.ring
+
+ring fix_ring_qt_qml.ring
 
 echo Code generation finished!
 endlocal
