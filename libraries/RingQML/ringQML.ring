@@ -192,3 +192,19 @@ class ringQML
 			ok
 		ok
 		return 0
+
+	/*
+		Name : LoadFile
+		Usage : LoadFile(cQmlFile)
+		Params : cQmlFile (String)
+		return : 0|1 (Number)
+	*/
+	func LoadFile cQmlFile 
+		if iswindows()
+			if ! fexists(cQmlFile)
+				raise("File not found: " + cQmlFile)
+			ok
+			return loadContent(read(cQmlFile))
+		ok
+		return loadContent(ringqml_readfile_from_qrc(cQmlFile))
+		
