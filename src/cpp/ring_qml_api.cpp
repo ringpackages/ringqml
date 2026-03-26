@@ -99,6 +99,26 @@ RING_FUNC(ring_loadQmlFromContentEngine) {
     RING_API_RETCPOINTER(loadQmlFromContentEngine(engine, qml), "QQuickItem");
 }
 
+RING_FUNC(ring_readfile_from_qrc) {
+    const char* filePath;
+    if (RING_API_PARACOUNT != 1) {
+        RING_API_ERROR(RING_API_BADPARACOUNT);
+        return;
+    }
+    if (!RING_API_ISSTRING(1)) {
+        RING_API_ERROR(RING_API_BADPARATYPE);
+        return;
+    }
+    filePath = RING_API_GETSTRING(1);
+    
+    const char* result = ringqml_readFileFromQRC(filePath);
+    if (result) {
+        RING_API_RETSTRING(result);
+    } else {
+        RING_API_RETSTRING("");
+    }
+}
+
 RING_FUNC(ring_createNewComponent) {
     QQmlEngine* engine;
     char* name;
@@ -108,7 +128,7 @@ RING_FUNC(ring_createNewComponent) {
         RING_API_ERROR(RING_API_BADPARACOUNT);
         return;
     }
-
+    RING_API_IGNORECPOINTERTYPE;
     if (!RING_API_ISCPOINTER(1) || !RING_API_ISSTRING(2) || !RING_API_ISSTRING(3)) {
         RING_API_ERROR(RING_API_BADPARATYPE);
         return;
@@ -331,6 +351,7 @@ void ringQML_initLib(RingState *pRingState) {
     RING_API_REGISTER("ringqml_loadfrom_qmlwidget", ring_loadQmlFromContentWidget);
     RING_API_REGISTER("ringqml_loadfrom_qmlview", ring_loadQmlFromContentView);
     RING_API_REGISTER("ringqml_loadfrom_qmlengin", ring_loadQmlFromContentEngine);
+    RING_API_REGISTER("ringqml_readfile_from_qrc", ring_readfile_from_qrc);
     RING_API_REGISTER("ringqmlenginapp_new", ring_qmlEnginApp_new);
     RING_API_REGISTER("ringqmlcallqmlfunc", ring_callQMLFunc);
     RING_API_REGISTER("createnewcomponent", ring_createNewComponent);
