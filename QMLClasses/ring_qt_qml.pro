@@ -1,14 +1,5 @@
 
 
-# ring_qt_qml
-
-
-#-------------------------------------------------
-#
-# Project created by QtCreator 2014-10-19T17:41:04
-#
-#-------------------------------------------------
-
 # QT       += core gui network multimedia multimediawidgets testlib printsupport widgets sql bluetooth quick quickwidgets qml positioning texttospeech 3dcore 3dextras 3drender 3dlogic charts svg quickcontrols2
 QT       += gui core quick qml svg network widgets
 
