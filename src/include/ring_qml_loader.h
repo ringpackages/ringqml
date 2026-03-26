@@ -36,9 +36,13 @@ void setQuickColorLikeWindow(QQuickWidget* quickWidget);
 
 // Loads QML string into a QQmlApplicationEngine
 QQuickItem* loadQmlFromContentEngine(QQmlApplicationEngine* engine, const char* qmlContent);
+// Loads QML file into a QQmlApplicationEngine
+QQuickItem* loadQmlFromFileEngine(QQmlApplicationEngine* engine, const char* qmlFile);
 
 // Creates a new QML component dynamically using temporary files
 QQuickItem* createNewComponent(QQmlEngine* engine, const char* componentName, const char* qmlCode);
+
+const char* ringqml_readFileFromQRC(const char* filePath);
 
 void SetRingEventForCallFromQML(VM* pVm, QQmlEngine* qmlEngine);
 
