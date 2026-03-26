@@ -203,6 +203,8 @@ QByteArray currentPath = qgetenv("PATH");
 qputenv("PATH", binPath.toUtf8() + currentPath);
 
 if (g_pRingState) {
+ring_qt_start(g_pRingState);
+
 new QApplication(g_pRingState->nArgc, g_pRingState->pArgv);
 
 QObject::connect(qApp, &QCoreApplication::aboutToQuit, []() {
@@ -211,7 +213,6 @@ TerminateProcess(GetCurrentProcess(), 0);
 #endif
 });
 
-ring_qt_start(g_pRingState);
 }
 }
 }
